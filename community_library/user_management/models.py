@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from django.core.validators import MaxValueValidator, MinValueValidator
 
 class Reader(models.Model):
-    user = models.OneToOneField(User, on_delete = models.CASCADE)
+    user = models.OneToOneField(User, on_delete = models.CASCADE, primary_key = True)
     address = models.TextField(max_length = 100)
     ratings = models.FloatField(
         default=2.5,
@@ -13,22 +13,14 @@ class Reader(models.Model):
     def __str__(self)->str:
         return f'{self.get_full_name()} is on {self.address}'
 
-    def finish_book(self):
-        pass
-
-    def get_Notifications(self)->list:
-        pass
-
-    def view_wishlist(self)->list:
-        pass
+    @property
+    def user_name(self)->str:
+        return self.user.username
 
 class Librarian(models.Model):
-    reader = models.OneToOneField(Reader, on_delete=models.CASCADE)
+    reader = models.OneToOneField(Reader, on_delete=models.CASCADE, primary_key = True)
 
 class DeliveryMan(models.Model):
-    reader = models.OneToOneField(Reader, on_delete=models.CASCADE)
-    cash_balance = models.IntegerField(
-        validators=[MinValueValidator(0.0)]
-    )
-    
+    reader = models.OneToOneField(Reader, on_delete=models.CASCADE, primary_key = True)
+
 # Create your models here.

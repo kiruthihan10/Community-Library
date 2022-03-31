@@ -1,7 +1,9 @@
 from django.db import models
-from django.core.validators import MaxValueValidator, MinValueValidator
+
 from library_management.models import Library
-from usermanagement.models import Reader
+from user_management.models import Reader
+
+from django.core.validators import MaxValueValidator, MinValueValidator
 
 class Book(models.Model):
 
@@ -15,6 +17,7 @@ class Book(models.Model):
     author = models.CharField(max_length=100)
     price = models.IntegerField(validators=[MinValueValidator(0.0)])
     language = models.CharField(
+        max_length = 10,
         choices=Languages.choices,
         default=Languages.tamil)
     quality = models.IntegerField(
@@ -22,10 +25,26 @@ class Book(models.Model):
     )
     library = models.ForeignKey(Library, on_delete=models.CASCADE)
 
-    def get_past_borrowers()->list[Reader]:
-        pass
+    class Meta:
+        indexes = [
+            models.Index(fields=['name'],name='name_index'),
+            models.Index(fields=['author'],name='author_index'),
+            models.Index(fields=['language'],name='language_index')
+        ]
 
     def __str__(self)->str:
         return f'{self.name} is  written by {self.author} in {self.language} for a price of {self.price}. It is currently in {self.library} with {self.quality} quality.'
     
+
+class Wishlist(models.Model):
+    ID = models.AutoField(primary_key=True)
+    book = models.ForeignKey(Book, on_delete=models.CASCADE)
+    reader = models.ForeignKey(Reader, on_delete=models.CASCADE)
+    date_added = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        indexes = [
+            models.Index(fields=['book'],name='book_index')
+        ]
+        unique_together = ['book','reader']
 # Create your models here.

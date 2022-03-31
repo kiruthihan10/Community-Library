@@ -20,7 +20,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-xucnb-)ul@tfi=sud0&7z@xs)s*%!c%9rd^^$f)(ym=5r)0^r9'
+SECRET_KEY = 'django-insecure-kw=7sf252x*qjh*!m^sh&g&v^29ldp4!qb2fe36-m0ond1cyg_'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -31,14 +31,19 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    'library_management.apps.LibraryManagementConfig',
-    'usermanagement.apps.UsermanagementConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
+    'rest_framework.authtoken',
+    'user_management.apps.UserManagementConfig',
+    'library_management.apps.LibraryManagementConfig',
+    'book_management.apps.BookManagementConfig',
+    'delivery_management.apps.DeliveryManagementConfig',
+
 ]
 
 MIDDLEWARE = [
@@ -49,6 +54,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
 
 ROOT_URLCONF = 'community_library.urls'
@@ -77,8 +83,11 @@ WSGI_APPLICATION = 'community_library.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'bwwabtpi',
+        'USER': 'bwwabtpi',
+        'PASSWORD': 'WNYMVvsxlgvbH3G-nJk_H8HjkXzWJyyM',
+        'HOST': 'satao.db.elephantsql.com',
     }
 }
 
