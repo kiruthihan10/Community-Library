@@ -15,6 +15,10 @@ class Library(models.Model):
         ]
         unique_together = ['name', 'address']
 
+    @property
+    def librarian_name(self):
+        return self.librarian.reader.user_name
+
     def __str__(self)->str:
         return f'{self.name} is managed by {self.librarian.username} in {self.address}. To join pay {self.subscription_fee}'
     
@@ -42,6 +46,17 @@ class MemberShip(models.Model):
             models.Index(fields=['reader'],name='member_index')
         ]
         unique_together = ['lib','reader']
+
+    @property
+    def user_name():
+        return self.reader.username
+
+    @property
+    def library_name():
+        return self.lib.name
+
+    def library_id():
+        return self.library_id
 
     def __str__(self)->str:
         ban_status = "banned" if self.banned else ""

@@ -11,7 +11,7 @@ class Reader(models.Model):
     )
 
     def __str__(self)->str:
-        return f'{self.get_full_name()} is on {self.address}'
+        return f'{self.user.username} is on {self.address}'
 
     @property
     def user_name(self)->str:
