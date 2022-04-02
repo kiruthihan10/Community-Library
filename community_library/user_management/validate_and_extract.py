@@ -17,11 +17,15 @@ def validate_and_extract_reader(request, user_name):
     return extract_reader(user_name)
 
 def extract_reader(user_name):
+    if type(user_name) == User:
+        user = user_name
+    else:
+        try:
+            user = User.objects.get(username=user_name)   
+        except User.DoesNotExist:
+            return USER_DOES_NOT_EXIST_RESPONSE
     try:
-        user = User.objects.get(username=user_name)
         reader = Reader.objects.get(user=user)
-    except User.DoesNotExist:
-        return USER_DOES_NOT_EXIST_RESPONSE
     except Reader.DoesNotExist:
         return READER_DOES_NOT_EXIST_RESPONSE
     return reader
@@ -35,3 +39,4 @@ def extract_librarian(user_name):
             return LIBRARIAN_DOES_NOT_EXIST_RESPONSE
         return librarian
     return reader
+

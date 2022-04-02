@@ -10,6 +10,8 @@ from community_library.validate_and_extract import *
 
 MEMBERSHIP_DOES_NOT_EXIST_RESPONSE = HttpResponse('Membership Does Not Exist', status=status.HTTP_204_NO_CONTENT)
 
+LIBRARY_DOES_NOT_EXIST_RESPONSE = HttpResponse('Library Does Not Exist', status=status.HTTP_204_NO_CONTENT)
+
 def extract_library(library_id):
     try:
         return Library.objects.get(pk=library_id)
@@ -26,3 +28,21 @@ def extract_membership(library, reader):
         return MemberShip.objects.get(lib=library,reader=reader)
     except MemberShip.DoesNotExist:
         return MEMBERSHIP_DOES_NOT_EXIST_RESPONSE
+
+def derive_library_from_librarian(librarian):
+    try:
+        library = Library.objects.get(librarian = librarian)
+    except Library.DoesNotExist:
+        return HttpResponse("Librarian does not have a library", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    return library
+
+def derive_library_from_user(user):
+    try:
+        reader = Reader.objects.get(user = user)
+    except reader.DoesNotExist:
+        return READER_DOES_NOT_EXIST_RESPONSE
+    try:
+        librarian = Librarian.objects.get(reader = reader)
+    except Librarian.DoesNotExist:
+        return LIBRARIAN_DOES_NOT_EXIST_RESPONSE
+    return derive_library_from_librarian(librarian)

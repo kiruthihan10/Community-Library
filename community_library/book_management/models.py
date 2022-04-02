@@ -32,6 +32,10 @@ class Book(models.Model):
             models.Index(fields=['language'],name='language_index')
         ]
 
+    @property
+    def library_name(self):
+        return self.library.name
+
     def __str__(self)->str:
         return f'{self.name} is  written by {self.author} in {self.language} for a price of {self.price}. It is currently in {self.library} with {self.quality} quality.'
     
@@ -47,4 +51,14 @@ class Wishlist(models.Model):
             models.Index(fields=['book'],name='book_index')
         ]
         unique_together = ['book','reader']
+
+    @property
+    def book_name(self):
+        return self.book.name
+
+    @property
+    def reader_name(self):
+        return reader.user_name
+    
+    
 # Create your models here.
