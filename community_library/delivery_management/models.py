@@ -20,6 +20,7 @@ class Borrowel(models.Model):
     end_quality = models.IntegerField(
         validators=[MinValueValidator(0.0), MaxValueValidator(5.0)]
     )
+    due_extended = models.BooleanField(default=False)
 
     @property
     def reader_name(self):
@@ -76,21 +77,22 @@ class Notification(models.Model):
     body = models.TextField(max_length=500)
     user = models.ForeignKey(Reader,on_delete=models.CASCADE)
 
+    @property
+    def user_name(self):
+        return self.user.user_name
+
 class Complaints(models.Model):
     ID = models.AutoField(primary_key=True)
     by = models.ForeignKey(Reader, on_delete=models.CASCADE)
     date = models.DateTimeField(auto_now_add=True)
     on = models.ForeignKey(DeliveryMan, on_delete=models.CASCADE)
 
-class BorrowelExtend(models.Model):
-    request = models.ForeignKey(Request,on_delete=models.CASCADE, primary_key=True)
+    @property
+    def by_user_name(self):
+        return self.by.user_name
 
     @property
-    def user_name(self):
-        return self.request.user_name
-
-    @property
-    def book_name(self):
-        return self.request.book_name
+    def on_user_name(self):
+        return self.on.user_name
 
 # Create your models here.

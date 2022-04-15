@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User
 from rest_framework import status
 from django.http import HttpResponse
+from django.core.exceptions import ObjectDoesNotExist
 
 from .models import Library, MemberShip
 
@@ -14,9 +15,10 @@ LIBRARY_DOES_NOT_EXIST_RESPONSE = HttpResponse('Library Does Not Exist', status=
 
 def extract_library(library_id):
     try:
-        return Library.objects.get(pk=library_id)
-    except User.DoesNotExist:
+        library =  Library.objects.get(pk=library_id)
+    except ObjectDoesNotExist:
         return USER_DOES_NOT_EXIST_RESPONSE
+    return library
 
 def validate_and_extract_library(request, library_id):
     if request.method == 'GET':

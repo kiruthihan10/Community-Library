@@ -9,10 +9,20 @@ class BorrowelSerializer(serializers.ModelSerializer):
 
 class BorrowelDueSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Request
+        model = Borrowel
         fields = ['reader_name','book_name','deadline']
 
-class ExtendSerializer(serializers.ModelSerializer):
+class RequestSerializer(serializers.ModelSerializer):
     class Meta:
-        model = BorrowelExtend
-        fields = ['user_name','book_name']
+        model = Request
+        fields = ['user_name','book_name','Date_applied','ID']
+
+class NotificationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Notification
+        fields = ['user_name','head','body']
+
+class ComplaintSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Complaints
+        fields = ['by_id','on_id','date','ID']

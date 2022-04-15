@@ -48,7 +48,7 @@ def specific_user_get(user_name):
         user = Reader.objects.get(user=User.objects.get(username=user_name))
     except Reader.DoesNotExist:
         return READER_DOES_NOT_EXIST_RESPONSE
-    except:
+    except Exception:
         return INTERNAL_SERVER_ERROR
     reader = ReaderSerializer(user)
     return JsonResponse(reader.data, status = status.HTTP_200_OK)
@@ -72,9 +72,9 @@ def specific_user_put(user_name):
 
 def specific_user_view(request, user_name):
     if request.method == 'GET':
-        specific_user_get(user_name)
+        return specific_user_get(user_name)
     elif request.method == 'PUT':
-        specific_user_put(user_name)
+        return specific_user_put(user_name)
     return BAD_REQUEST_METHOD_RESPONSE
 
 def rating_view(request, user_name):
@@ -96,6 +96,7 @@ def specific_member_get(user_name, library_id):
     reader = extract_reader(user_name)
     if type(reader) == Reader:
         library = extract_library(library_id)
+        print(library)
         if type(library) == Library:
             try:
                 membership = MemberShip.objects.get(reader = reader, lib = library)
