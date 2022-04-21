@@ -21,6 +21,7 @@ from book_management.validate_and_extract import *
 
 
 def library_view_post(request):
+    ## ADD NEW LIBRARY
     if not request.user.is_superuser:
         return UNAUTH_RESPONSE
     data = request.data.copy()
@@ -41,26 +42,36 @@ def library_view_post(request):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     return reader
 
+def library_view_get(request):
+    # GET ALL LIBRARIES IN SYSTEM
+    libraries = Library.objects.all()
+    serializer = LibrarySerializer(instance = library)
+    return JsonResponse(serializer.data, status= status.HTTP_200_OK)
+
+def library_view_put(request):
+    # UPDATE LIBRARIAN'S LIBRARY INFO
+    librarian = extract_librarian(request.user)
+    try:
+        library = Library.objects.get(librarian = librarian)
+    except Library.DoesNotExist:
+        return HttpResponse("Librarian Does Not have Library", status = status.HTTP_500_INTERNAL_SERVER_ERROR)
+    return specific_library_put(request, library.ID)
+
 @api_view(['GET', 'POST', 'PUT'])
 @permission_classes((IsAuthenticated, ))
 def library_view(request):
+    # LIBRARY BASED CRUD OPERATIONS
     if request.method == 'GET':
-        libraries = Library.objects.all()
-        serializer = LibrarySerializer(instance = library)
-        return JsonResponse(serializer.data, status= status.HTTP_200_OK)
+        return library_view_get(request)
     elif request.method == 'POST':
         return library_view_post(request)
     elif request.method == 'PUT':
-        librarian = extract_librarian(request.user)
-        try:
-            library = Library.objects.get(librarian = librarian)
-        except:
-            return HttpResponse("Librarian Does Not have Library", status = status.HTTP_500_INTERNAL_SERVER_ERROR)
-        return specific_library_put(request, library.ID)
+        return library_view_put(request)
     else:
         return BAD_REQUEST_METHOD_RESPONSE
         
 def specific_library_get(library_id):
+    # SPECIFIC LIBRARY'S INFORMATION
     library = extract_library(library_id)
     if type(library) == Library:
         serializer = LibrarySerializer(instance = library)
@@ -68,6 +79,7 @@ def specific_library_get(library_id):
     return library
 
 def specific_library_put(request, library_id):
+    # UPDATE CERTAIN LIBRARY'S INFORMATION
     library = extract_library(library_id)
     if type(library) == Library:
         data = request.data
@@ -94,6 +106,7 @@ def specific_library_put(request, library_id):
     return library
 
 def specific_library(request, library_id):
+    # SPECIFIC LIBRARY READ & UPDATE
     if request.method == 'GET':
         specific_library_get
     elif request.method == 'PUT':
@@ -101,6 +114,7 @@ def specific_library(request, library_id):
     return BAD_REQUEST_METHOD_RESPONSE
 
 def specific_library_librarian(request, library_id):
+    # RETURN LIBRARIE'S LIBRARIAN
     library = validate_and_extract_library(request, library_id)
     if type(library) == Library:
         serializer = ReaderSerializer(instance = library.librarian)
@@ -108,6 +122,7 @@ def specific_library_librarian(request, library_id):
     return library
 
 def specific_library_inventory(request, library_id):
+    # RETURN BOOKS DETAILS ON A GIVEN LIBRARY
     library = validate_and_extract_library(request, library_id)
     if type(library) == Library:
         books = Book.objects.filter(library=library)
@@ -117,6 +132,7 @@ def specific_library_inventory(request, library_id):
 @api_view(['POST'])
 @permission_classes((IsAuthenticated, ))
 def specific_library_ban_user(library, user_name):
+    # BAN USER ON A LIBRARY
     if request.method != 'POST':
         return BAD_REQUEST_METHOD_RESPONSE
     user = request.user
@@ -135,7 +151,3 @@ def specific_library_ban_user(library, user_name):
             return reader
         return UNAUTHORIZED_ACCESS_RESPONSE
     return library
-
-
-
-# Create your views here.

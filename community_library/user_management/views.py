@@ -39,11 +39,8 @@ class UserViewSet(viewsets.ModelViewSet):
         serializer = ReaderSerializer(readers)
         return Response(serializer.data)
 
-class ReaderViewSet(viewsets.ModelViewSet):
-    queryset = Reader.objects.all()
-    serializer_class = ReaderSerializer
-
 def specific_user_get(user_name):
+    ## READ specific user's informations
     try:
         user = Reader.objects.get(user=User.objects.get(username=user_name))
     except Reader.DoesNotExist:
@@ -53,7 +50,8 @@ def specific_user_get(user_name):
     reader = ReaderSerializer(user)
     return JsonResponse(reader.data, status = status.HTTP_200_OK)
 
-def specific_user_put(user_name):
+def specific_user_put(request, user_name):
+    ## UPDATE specific user's information
     try:
         user=User.objects.get(username=user_name)
     except User.DoesNotExist:
@@ -71,6 +69,7 @@ def specific_user_put(user_name):
     return JsonResponse(ReaderSerializer(reader).data, status = status.HTTP_201_CREATED)
 
 def specific_user_view(request, user_name):
+    ## USER PARTIAL CRUD
     if request.method == 'GET':
         return specific_user_get(user_name)
     elif request.method == 'PUT':
@@ -78,6 +77,7 @@ def specific_user_view(request, user_name):
     return BAD_REQUEST_METHOD_RESPONSE
 
 def rating_view(request, user_name):
+    ## Return rating information of a specific user given in URL parameter
     reader = validate_and_extract_reader(request, user_name)
     if type(reader) == Reader:
         serializer = ReaderRatingSerializer(instance=reader)
@@ -85,6 +85,7 @@ def rating_view(request, user_name):
     return reader
 
 def member_view(request, user_name):
+    ## Return all the membership information of a specific user given in URL parameter
     reader = validate_and_extract_reader(request, user_name)
     if type(reader) == Reader:
         memberships = MemberShip.objects.filter(reader = reader)
@@ -93,6 +94,7 @@ def member_view(request, user_name):
     return reader
 
 def specific_member_get(user_name, library_id):
+    ## READ A SPECIFIC MEMBERSHIP DETAILS FOR A SPECIFIC USER & LIBRARY
     reader = extract_reader(user_name)
     if type(reader) == Reader:
         library = extract_library(library_id)
@@ -108,6 +110,7 @@ def specific_member_get(user_name, library_id):
     return reader
 
 def specific_member_post(user_name, library_id):
+    ## CREATE NEW MEMBERSHIP FOR A SPECIFIC USER ON A SPECIFIC LIBRARY
     reader = extract_reader(user_name)
     if type(reader) == Reader:
         library = extract_library(library_id)
@@ -122,6 +125,7 @@ def specific_member_post(user_name, library_id):
     return reader
 
 def specific_member_delete(user_name, library_id):
+    ## DELETE A MEMBERSHIP OF A USER ON A LIBRARY
     reader = extract_reader(user_name)
     if type(reader) == Reader:
         library = extract_library(library_id)
@@ -136,6 +140,7 @@ def specific_member_delete(user_name, library_id):
     return reader
 
 def specific_member(request, user_name, library_id):
+    ## MEMBERSHIP PERTIAL CRUD OPERATIONS
     if request.method == 'GET':
         return specific_member_get(user_name, library_id)
     elif request.method == 'POST':
