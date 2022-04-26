@@ -86,8 +86,6 @@ class MemberShip(models.Model):
         payment = Payment.objects.get(deliveryman=deliveryman, library=self.lib)
         payment.increase_amount(self.lib.subscription_fee)
 
-# Create your models here.
-
 class Payment(models.Model):
     ID = models.AutoField(primary_key=True)
     library = models.ForeignKey(Library, on_delete=models.CASCADE)

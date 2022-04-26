@@ -60,5 +60,3 @@ class Wishlist(models.Model):
     def reader_name(self):
         return reader.user_name
     
-    
-# Create your models here.

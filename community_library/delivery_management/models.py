@@ -21,6 +21,7 @@ class Borrowel(models.Model):
         validators=[MinValueValidator(0.0), MaxValueValidator(5.0)]
     )
     due_extended = models.BooleanField(default=False)
+    delivery_man = models.ForeignKey(DeliveryMan, on_delete=models.SET_NULL, null=True)
 
     @property
     def reader_name(self):

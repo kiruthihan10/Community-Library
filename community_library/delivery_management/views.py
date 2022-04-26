@@ -100,6 +100,7 @@ def delivery_confirmed(request, book_id, user_id):
                 book = book,
                 reader = user,
                 start_quality = book.quality,
+                delivery_man = deliveryman
             )
             borrowel.save()
         return request
@@ -304,6 +305,8 @@ def specific_complaint_post(request, user_id):
     reader = extract_reader(request.user)
     if type(reader) != Reader:
         return reader
+    if not Borrowel.filter(reader = reader, deliverman = deliverman).exists():
+        return HttpResponse(f'{reader} has never met {deliveryman}', status=status.HTTP_400_BAD_REQUEST)
     complaint = Complaints(
         by = reader,
         on = deliveryman,
