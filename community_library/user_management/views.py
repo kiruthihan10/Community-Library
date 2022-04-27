@@ -50,23 +50,28 @@ def specific_user_get(user_name):
     reader = ReaderSerializer(user)
     return JsonResponse(reader.data, status = status.HTTP_200_OK)
 
+@api_view(['GET', 'POST', 'PUT'])
+@permission_classes((IsAuthenticated, ))
 def specific_user_put(request, user_name):
     ## UPDATE specific user's information
-    try:
-        user=User.objects.get(username=user_name)
-    except User.DoesNotExist:
-        return USER_DOES_NOT_EXIST_RESPONSE
-    if 'password' in request.data.keys():
-        user.set_password(request.data['password'])
-        user.save()
-    if 'address' in request.data.keys():
+    request_user = request.user
+    if request.user.username == user_name or request_user.is_superuser:
         try:
-            reader = Reader.objects.get(user=user)
-        except Reader.DoesNotExist:
-            return READER_DOES_NOT_EXIST_RESPONSE
-        reader.address = request.data['address']
-        reader.save()
-    return JsonResponse(ReaderSerializer(reader).data, status = status.HTTP_201_CREATED)
+            user=User.objects.get(username=user_name)
+        except User.DoesNotExist:
+            return USER_DOES_NOT_EXIST_RESPONSE
+        if 'password' in request.data.keys():
+            user.set_password(request.data['password'])
+            user.save()
+        if 'address' in request.data.keys():
+            try:
+                reader = Reader.objects.get(user=user)
+            except Reader.DoesNotExist:
+                return READER_DOES_NOT_EXIST_RESPONSE
+            reader.address = request.data['address']
+            reader.save()
+        return JsonResponse(ReaderSerializer(reader).data, status = status.HTTP_201_CREATED)
+    return UNAUTH_RESPONSE
 
 def specific_user_view(request, user_name):
     ## USER PARTIAL CRUD
