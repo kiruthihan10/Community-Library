@@ -51,7 +51,8 @@ def request_book_by_user_post(request, book_id, user_id):
 
 def request_book_by_user_delete(request, book_id, user_id):
     # DELETE A REQUEST MADE BY A USER FOR A BOOK
-    # (BUG)HAVE TO MAKE AUTHORIZATIONS SUCH AS ONLY BOOK'S LIBRARIAN OR READER CAN DELETE THE REQUEST
+    if request.user.username != user_id:
+        return HttpResponse('You can only delete your requests',status = status.HTTP_401_UNAUTHORIZED)
     user, book = extract_user_and_book(user_id, book_id)
     if type(book) == Book:
         if type(user) == Reader:
